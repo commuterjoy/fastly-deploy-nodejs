@@ -3,11 +3,22 @@ An example of a node.js based Fastly deployment process.
 
 ## Usage
 
+You'll need an Fastly API key and also to configure a new service in fastly and
+get hold of it's 'service id'.
+
     npm install https://github.com/commuterjoy/fastly/archive/v2.0.0.tar.gz
-    
-    export fastly_apikey=<your-fastly-api-key> \
-    export fastly_service=<your-fastly-service-id> \
+   
+    export DEBUG=fastly; \
+    export fastly_apikey=<your-fastly-api-key>; \
+    export fastly_service=<your-fastly-service-id>; \
     node deploy__vcl.js
+
+You should see a trickle of requests being made to the API, 
+
+    fastly Request: GET, /service/f9935BOx.../version +0ms
+    fastly Request: PUT, /service/f9935BOx.../version/40/clone +1s
+    fastly Request: GET, /service/f9935BOx.../version/41/vcl +669ms
+    ...
 
 ## Notes
 
