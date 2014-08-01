@@ -3,17 +3,25 @@ backend next {
     .connect_timeout = 3s;
     .share_key = "f8585BOxnGQDMbnkJoM1e";
     .port = "80";
-    .host = "62.25.64.110";
+    .host = "62.25.64.110"; // ft.com 
+}
+
+backend webapp {
+    .first_byte_timeout = 15s;
+    .connect_timeout = 3s;
+    .share_key = "f8585BOxnGQDMbnkJoM1e";
+    .port = "80";
+    .host = "54.217.215.190"; // commuterjoy.co.uk
 }
 
 sub vcl_recv {
-  if (req.restarts == 0) {
-    if (!req.http.X-Timer) {
-      set req.http.X-Timer = "S" time.start.sec "." time.start.usec_frac;
-    }
-    set req.http.X-Timer = req.http.X-Timer ",VS0";
-  }
-
+  
+  # default backend
   set req.backend = next;
 
+  # user-agent sent to the webapp
+  if (req.http.User-Agent ~ "(?i)iphone") {
+    set req.backend = webapp;
+  }
+    
 }
