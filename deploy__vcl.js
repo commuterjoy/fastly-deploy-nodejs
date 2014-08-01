@@ -40,15 +40,27 @@ fastly
     .then(function (res) {
 
         // 5. Upload a VCL for a particular service and version
-        
+       
+        console.log('uploading ...');
+
         return fastly.request('POST', '/service/'+service+'/version/'+version+'/vcl', {
-            name: 'main',
+            name: 'next',
             content: vcl
         })
 
     })
     .then(function (res) {
+   
+        // 5a. Set the 'next' VCL as the main one
+        
         console.log('uploaded', res);
+        return fastly.request('PUT', '/service/'+service+'/version/'+version+'/vcl/next/main', {
+            name: 'next',
+            content: vcl
+        })
+
+    })
+    .then(function (res) {
 
         // 6. Validate the new VCL
         
