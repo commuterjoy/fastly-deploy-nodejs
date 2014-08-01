@@ -20,17 +20,26 @@ You should see a trickle of requests being made to the API,
     fastly Request: GET, /service/f9935BOx.../version/41/vcl +669ms
     ...
 
+## Workflow
+
+The workflow to configure the CDN is simple,
+
+ - Update VCL in ./src/vcl
+ - Type `make deploy test`
+
+If the tests pass you've not broken anything and can deploy to production.
+
 ## Notes
 
 This is the strategy theguardian.com used when deploying fastly VCL updates,
 
- - Find the active VCL version
- - Clone the active version
- - Delete all the VCL file(s) in the cloned version ready for the new ones
- - Upload you new VCL file(s)
- - Define the main VCL file (if you've got more than one)
- - Validate the cloned version
- - Activate the cloned version
+ - Find the active VCL version.
+ - Clone the active version.
+ - Delete all the VCL file(s) in the cloned version ready for the new ones.
+ - Upload you new VCL file(s).
+ - Define the main VCL file.
+ - Validate the cloned version.
+ - Activate the cloned version.
 
-This is based on the [fastly node client library](https://github.com/commuterjoy/fastly).
+This is based on the [Fastly node client library](https://github.com/commuterjoy/fastly).
 
