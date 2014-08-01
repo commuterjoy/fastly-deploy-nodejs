@@ -2,7 +2,11 @@
 var fastly = require('fastly')(process.env.fastly_apikey);
 var service = encodeURIComponent(process.env.fastly_service);
 var Q = require('q')
+var fs = require('fs')
 var version;
+
+// the VCL we want to deploy
+var vcl = readFileSync('./src/vcl/default.vcl', { encoding: 'utf-8' });
 
 // 1. Get the latest version
 
@@ -39,7 +43,7 @@ fastly
         
         return fastly.request('POST', '/service/'+service+'/version/'+version+'/vcl', {
             name: 'main',
-            content: 'backend www { .host = "www.ft.com"; .port = "http" }' // TODO - read this from some local source
+            content: vcl
         })
 
     })
