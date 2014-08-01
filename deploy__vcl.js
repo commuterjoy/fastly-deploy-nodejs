@@ -6,7 +6,7 @@ var fs = require('fs')
 var version;
 
 // the VCL we want to deploy
-var vcl = readFileSync('./src/vcl/default.vcl', { encoding: 'utf-8' });
+var vcl = fs.readFileSync('./src/vcl/default.vcl', { encoding: 'utf-8' });
 
 // 1. Get the latest version
 
