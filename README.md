@@ -27,7 +27,7 @@ The workflow to configure the CDN is simple,
  - Update VCL in ./src/vcl
  - Type `make deploy test`
 
-If the tests pass you've not broken anything and can deploy to production.
+If the tests pass then you've not broken anything and can deploy to production.
 
 ## Notes
 
