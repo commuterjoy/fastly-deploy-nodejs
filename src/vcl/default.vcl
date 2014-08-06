@@ -34,7 +34,7 @@ sub vcl_recv {
     # Don't cache uncachable requests
     if (req.request != "HEAD" && req.request != "GET" && req.request != "FASTLYPURGE") {
         set req.http.X-FT-Cachable = "false";
-        return(pass);
+        error 405 ": Requested Method is not supported by this server.";        
     }
 
     return (lookup);
