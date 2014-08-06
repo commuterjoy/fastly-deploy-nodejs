@@ -51,4 +51,5 @@ sub vcl_deliver {
         set resp.http.X-Timer = req.http.X-Timer ",VE" time.elapsed.msec;
     }
 
+    return(deliver);
 }

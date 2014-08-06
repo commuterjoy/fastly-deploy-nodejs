@@ -35,6 +35,32 @@ describe('next.ft.com backend', function() {
     
     });
 
+    describe('Requests', function () {
+        
+        it('Should respond to GET requests', function (done) {
+            request
+                .get(host)
+                .set({ 'x-ft-secret': 'HoratioBottomley' })
+                .end(function (err, res) {
+                    if (err) throw err;
+                    expect(res.status).to.equal(200);
+                    done()
+                });
+        });
+        
+        it('Should respond to HEAD requests', function (done) {
+            request
+                .head(host)
+                .set({ 'x-ft-secret': 'HoratioBottomley' })
+                .end(function (err, res) {
+                    if (err) throw err;
+                    expect(res.status).to.equal(200);
+                    done()
+                });
+        });
+
+    })
+
     describe('Caching', function () {
         
         it('Should not cache uncachable requests', function (done) {
@@ -43,7 +69,7 @@ describe('next.ft.com backend', function() {
                 .set({ 'x-ft-secret': 'HoratioBottomley' })
                 .end(function (err, res) {
                     if (err) throw err;
-                    //expect(res.status).to.equal(405); // FIXME: generates a 503
+                    //expect(res.status).to.equal(405); // FIXME: generates a 503!?
                     expect(res.header['x-ft-cachable']).to.equal('false');
                     done();
                 });
