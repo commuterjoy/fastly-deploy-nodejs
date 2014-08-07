@@ -1,4 +1,5 @@
-backend next {
+
+backend next_us {
     .connect_timeout = 1s;
     .dynamic = true;
     .port = "80";
@@ -18,18 +19,43 @@ backend next {
         .expected_response = 200;
         .interval = 60s;
       }
+}
 
+backend next_eu {
+    .connect_timeout = 1s;
+    .dynamic = true;
+    .port = "80";
+    .host = "eu-ft-next-sample.herokuapp.com";
+    .host_header = "eu-ft-next-sample.herokuapp.com";
+    .first_byte_timeout = 15s;
+    .max_connections = 200;
+    .between_bytes_timeout = 10s;
+    .share_key = "f8585BOxnGQDMbnkJoM1e";
+      
+    .probe = {
+        .request = "HEAD /__gtg HTTP/1.1" "Host: eu-ft-next-sample.herokuapp.com" "Connection: close""User-Agent: Varnish/fastly (healthcheck)";
+        .threshold = 1;
+        .window = 2;
+        .timeout = 5s;
+        .initial = 1;
+        .expected_response = 200;
+        .interval = 60s;
+      }
 }
 
 sub vcl_recv {
   
-    # Default backend
-    set req.backend = next;
-
-    # ...
+    # Default backend (US)
+    set req.backend = next_us;
     set req.http.Host = "us-ft-next-sample.herokuapp.com";
 
-    # 
+    # ... use EU if the request comes from Europe
+    if (geoip.continent_code == "EU") {
+        set req.backend = next_eu;
+        set req.http.Host = "eu-ft-next-sample.herokuapp.com";
+    }
+    
+    # geoip
     set req.http.X-Geoip-Continent = geoip.continent_code;
 
     if (req.restarts == 0) {

@@ -79,9 +79,9 @@ describe('next.ft.com backend', function() {
             })
         })
         
-        xit('Should allow the region backend to be overridden', function (done) {
-            request.get(host).set(auth).end(function () {
-                    expect(res.header['x-country']).to.match(/EU/);
+        it('Should use the EU region backend when coming from Europe', function (done) {
+            request.get(host).set(auth).end(function (err, res) {
+                    expect(res.header['x-ft-backend-region']).to.match(/eu/);
                     done();
             })
         })
