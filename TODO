@@ -7,9 +7,9 @@ It features :-
 - A developer-oriented workflow - deploy to staging, execute a test suite and deploy to production.
 - Balances the load across multiple regions (based on origin of traffic and backend health).
 - System state can be emulated with request headers.
+- Multi-region routing + ability to override
 
 To-do
 
-- Multi-region routing + ability to override
 - Editions - Eg, can serve two or more editions of the same URL, based on cookie and/or request header
     - backends need to know the edition, then send a vary: x-ft-edition 
