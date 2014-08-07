@@ -1,23 +1,33 @@
-
 backend next {
-    .first_byte_timeout = 15s;
-    .connect_timeout = 3s;
-    .share_key = "f8585BOxnGQDMbnkJoM1e";
+    .connect_timeout = 1s;
+    .dynamic = true;
     .port = "80";
-    .host = "54.217.215.190"; // commuterjoy.co.uk
+    .host = "us-ft-next-sample.herokuapp.com";
+    .host_header = "us-ft-next-sample.herokuapp.com";
+    .first_byte_timeout = 15s;
+    .max_connections = 200;
+    .between_bytes_timeout = 10s;
+    .share_key = "f8585BOxnGQDMbnkJoM1e";
+      
     .probe = {
-            .url = "/";
-            .interval = 20s;
-            .timeout = 2s;
-            .window = 5;
-            .threshold = 3;
-    }
+        .request = "HEAD /__gtg HTTP/1.1" "Host: us-ft-next-sample.herokuapp.com" "Connection: close""User-Agent: Varnish/fastly (healthcheck)";
+        .threshold = 1;
+        .window = 2;
+        .timeout = 5s;
+        .initial = 1;
+        .expected_response = 200;
+        .interval = 60s;
+      }
+
 }
 
 sub vcl_recv {
   
     # Default backend
     set req.backend = next;
+
+    # ...
+    set req.http.Host = "us-ft-next-sample.herokuapp.com";
 
     if (req.restarts == 0) {
         if (!req.http.X-Timer) {
