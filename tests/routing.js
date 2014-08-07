@@ -86,6 +86,13 @@ describe('next.ft.com backend', function() {
             })
         })
         
+        it('Should use the US region backend when coming from outside of Europe', function (done) {
+            request.get(host).set(auth).set('x-ft-region', 'us').end(function (err, res) {
+                    expect(res.header['x-ft-backend-region']).to.match(/us/);
+                    done();
+            })
+        })
+        
     });
 
 });

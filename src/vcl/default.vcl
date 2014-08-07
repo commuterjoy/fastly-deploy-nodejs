@@ -50,11 +50,17 @@ sub vcl_recv {
     set req.http.Host = "us-ft-next-sample.herokuapp.com";
 
     # ... use EU if the request comes from Europe
-    if (geoip.continent_code == "EU") {
+    if (geoip.continent_code == "EU" || req.http.X-FT-Region == "eu") {
         set req.backend = next_eu;
         set req.http.Host = "eu-ft-next-sample.herokuapp.com";
     }
-    
+
+    # ... us US if the request has asked for it
+    if (req.http.X-FT-Region == "us") {
+        set req.backend = next_us;
+        set req.http.Host = "us-ft-next-sample.herokuapp.com";
+    }
+
     # geoip
     set req.http.X-Geoip-Continent = geoip.continent_code;
 
