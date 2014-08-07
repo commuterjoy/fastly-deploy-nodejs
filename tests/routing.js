@@ -28,7 +28,7 @@ describe('next.ft.com backend', function() {
         })
         
         it('Should respond HTTP 200 when client sends the correct credentials', function (done) {
-            status(host, 200, done, {
+            status(host, 200, done, headers = {
                 'x-ft-secret': 'HoratioBottomley'
             });
         })
