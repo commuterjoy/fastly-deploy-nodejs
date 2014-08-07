@@ -1,8 +1,10 @@
 
 // deploy --stage|prod
 
-var service = encodeURIComponent(process.env.fastly_service);
-var fastly = require('fastly')(process.env.fastly_apikey, service);
+var argv = require('minimist')(process.argv.slice(2));
+
+var service = (argv.prod) ? process.env.fastly_service_prod : process.env.fastly_service_stage;
+var fastly = require('fastly')(process.env.fastly_apikey, encodeURIComponent(service));
 var Q = require('q')
 var fs = require('fs')
 var version;
@@ -11,25 +13,26 @@ var version;
 var vcl = fs.readFileSync('./src/vcl/default.vcl', { encoding: 'utf-8' });
 
 fastly
-    .getVersions()                                       //   1. Get the latest version
-    .then( function (res) {                                 //   2. derive the last version number and clone it
+    .getVersions()                                          //   1. Get the latest version
+    .then( function (res) {                                 //   2. Derive the last version number and clone it
         var lastVersion = JSON.parse(res).pop().number;
         return fastly.cloneVcl(lastVersion); 
     })
-    .then(function (res) {                                  //   3. list VCLs
+    .then(function (res) {                                  //   3. List VCLs
         version = JSON.parse(res).number;
         return fastly.getVcl(version)
     })
-    .then(function (res) {                                  //   4. delete the VCL (all of them)
+    .then(function (res) {                                  //   4. Delete the VCL (all of them)
         return Q.all(
             JSON.parse(res).map(function (vcl) {
                 return fastly.deleteVcl(version, vcl.name);
             })
         )
     })
-    .then(function (res) {                                  //   5. upload a VCL for a particular service and version
+    .then(function (res) {                                  //   5. Upload a VCL for a particular service and version
         return fastly.updateVcl(version, {
-            name: 'next', content: vcl
+            name: 'next',
+            content: vcl
         });
     })
     .then(function (res) {                                  //    6. Set the 'next' VCL as the main one
@@ -46,7 +49,7 @@ fastly
         }
     })
     .then(function (res) { 
-        console.log('New VCL installed and activated', res);
+        console.log('New VCL installed and activated');     //    9. Complete!
     })
     .catch(function (err) {
         throw new Error(err); 
