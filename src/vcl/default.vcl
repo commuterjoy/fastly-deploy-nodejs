@@ -29,6 +29,9 @@ sub vcl_recv {
     # ...
     set req.http.Host = "us-ft-next-sample.herokuapp.com";
 
+    # 
+    set req.http.X-Geoip-Continent = geoip.continent_code;
+
     if (req.restarts == 0) {
         if (!req.http.X-Timer) {
             set req.http.X-Timer = "S" time.start.sec "." time.start.usec_frac;
@@ -59,6 +62,10 @@ sub vcl_deliver {
 
     if (req.http.X-Timer) {
         set resp.http.X-Timer = req.http.X-Timer ",VE" time.elapsed.msec;
+    }
+    
+    if (req.http.X-Geoip-Continent) {
+        set resp.http.X-Geoip-Continent = req.http.X-Geoip-Continent; 
     }
 
     return(deliver);

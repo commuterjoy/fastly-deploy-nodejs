@@ -72,9 +72,9 @@ describe('next.ft.com backend', function() {
         // 2. Switch between them via geoip.continent_code == "EU" 
         // 3. Switch between them via a request header, Eg curl -H 'X-Region: EU' ...
         // 4. Set a region identifier in the response header
-        xit('Should show the country of origin of each request', function (done) {
-            request.get(host).set(auth).end(function () {
-                    expect(res.header['x-country']).to.match(/EU/);
+        it('Should show the country of origin of each request', function (done) {
+            request.get(host).set(auth).end(function (err, res) {
+                    expect(res.header['x-geoip-continent']).to.match(/EU/);
                     done();
             })
         })
