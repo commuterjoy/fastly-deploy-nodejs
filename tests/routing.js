@@ -88,6 +88,18 @@ describe('next.ft.com backend', function() {
                     done();
             })
         })
+       
+        // ie. us and eu are *regions* capable of serving any edition
+        it('Should not couple regions to editions', function (done) {
+            request.get(host).set(auth)
+                             .set('x-ft-region', 'us')
+                             .set('x-ft-edition', 'uk')
+                             .end(function (err, res) {
+                    expect(res.header['x-ft-backend-region']).to.match(/us/);
+                    expect(res.header['x-ft-edition']).to.match(/uk/);
+                    done();
+            })
+        })
     });
        
     describe('Editions', function () {

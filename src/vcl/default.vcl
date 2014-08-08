@@ -44,6 +44,10 @@ backend next_eu {
 }
 
 sub vcl_recv {
+    
+    ##
+    # Backends 
+    # 
  
     # Default backend (US)
     set req.backend = next_us;
@@ -51,25 +55,25 @@ sub vcl_recv {
 
     # ... use EU if the request comes from Europe
     if (geoip.continent_code == "EU" || req.http.X-FT-Region == "eu") {
-        
         set req.backend = next_eu;
         set req.http.Host = "eu-ft-next-sample.herokuapp.com";
-        
-        if (!req.http.X-FT-Edition) {
-            set req.http.X-FT-Edition = "uk";
-        }
     }
 
-    # ... use US if the request has asked for it
+    # ... use US if the request has specifically asked for it
     if (req.http.X-FT-Region == "us") {
-        
         set req.backend = next_us;
         set req.http.Host = "us-ft-next-sample.herokuapp.com";
+    }
+   
+    ##
+    #  Editions
+    # 
 
-        # TODO - we shouldn't couple editions with regions
+    # US users get sent to US edition if no preference has been seleted
+    if (geoip.continent_code == "US" || req.http.X-FT-Region == "us"  && !req.http.X-FT-Edition) {
         set req.http.X-FT-Edition = "us";
     }
-
+    
     # Set a default edition if nothing has been specified
     if (!req.http.X-FT-Edition) {
         set req.http.X-FT-Edition = "uk";
