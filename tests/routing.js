@@ -68,10 +68,6 @@ describe('next.ft.com backend', function() {
             })
         })
        
-        // 1. Implement two backends in different AWS regions (heroku)
-        // 2. Switch between them via geoip.continent_code == "EU" 
-        // 3. Switch between them via a request header, Eg curl -H 'X-Region: EU' ...
-        // 4. Set a region identifier in the response header
         it('Should show the country of origin of each request', function (done) {
             request.get(host).set(auth).end(function (err, res) {
                     expect(res.header['x-geoip-continent']).to.match(/EU/);
@@ -89,6 +85,36 @@ describe('next.ft.com backend', function() {
         it('Should use the US region backend when coming from outside of Europe', function (done) {
             request.get(host).set(auth).set('x-ft-region', 'us').end(function (err, res) {
                     expect(res.header['x-ft-backend-region']).to.match(/us/);
+                    done();
+            })
+        })
+    });
+       
+    describe('Editions', function () {
+
+        // 1. assign a user to a region, then to an edition 
+        // 2. annotate the request object so that the backend can see the edition
+        // 3. annotate the request object with a vary: x-edition to avoid cache clashes
+        // 4. add an edition switch in the heroku app code and send back 'vary: x-edition'
+        // 5. annotate the response object with an addition
+
+        it('Users from UK should be shown a UK edition', function (done) {
+            request.get(host).set(auth).end(function (err, res) {
+                    expect(res.header['x-ft-edition']).to.match(/uk/);
+                    done();
+            })
+        });
+
+        it('Users from US should be shown a US edition', function (done) {
+            request.get(host).set(auth).set('x-ft-region', 'us').end(function (err, res) {
+                    expect(res.header['x-ft-edition']).to.match(/us/);
+                    done();
+            })
+        });
+
+        it('Users with an edition preference should be shown that edition', function (done) {
+            request.get(host).set(auth).set('x-ft-edition', 'india').end(function (err, res) {
+                    expect(res.header['x-ft-edition']).to.match(/india/);
                     done();
             })
         })

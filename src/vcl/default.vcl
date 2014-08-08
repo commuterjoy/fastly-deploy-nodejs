@@ -44,26 +44,41 @@ backend next_eu {
 }
 
 sub vcl_recv {
-  
+ 
     # Default backend (US)
     set req.backend = next_us;
     set req.http.Host = "us-ft-next-sample.herokuapp.com";
 
     # ... use EU if the request comes from Europe
     if (geoip.continent_code == "EU" || req.http.X-FT-Region == "eu") {
+        
         set req.backend = next_eu;
         set req.http.Host = "eu-ft-next-sample.herokuapp.com";
+        
+        if (!req.http.X-FT-Edition) {
+            set req.http.X-FT-Edition = "uk";
+        }
     }
 
-    # ... us US if the request has asked for it
+    # ... use US if the request has asked for it
     if (req.http.X-FT-Region == "us") {
+        
         set req.backend = next_us;
         set req.http.Host = "us-ft-next-sample.herokuapp.com";
+
+        # TODO - we shouldn't couple editions with regions
+        set req.http.X-FT-Edition = "us";
     }
 
-    # geoip
+    # Set a default edition if nothing has been specified
+    if (!req.http.X-FT-Edition) {
+        set req.http.X-FT-Edition = "uk";
+    }
+    
+    # Geo-ip
     set req.http.X-Geoip-Continent = geoip.continent_code;
 
+    # Response time metadata
     if (req.restarts == 0) {
         if (!req.http.X-Timer) {
             set req.http.X-Timer = "S" time.start.sec "." time.start.usec_frac;
