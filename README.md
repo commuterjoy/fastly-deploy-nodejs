@@ -1,6 +1,4 @@
 
-An example of a node.js based Fastly deployment process.
-
 ## Usage
 
 You'll need an Fastly API key and also to configure a new service in fastly and
@@ -11,7 +9,7 @@ get hold of it's 'service id'.
     export DEBUG=fastly; \
     export fastly_apikey=<your-fastly-api-key>; \
     export fastly_service=<your-fastly-service-id>; \
-    node deploy__vcl.js
+    node deploy.js
 
 You should see a trickle of requests being made to the API, 
 
@@ -42,4 +40,19 @@ This is the strategy theguardian.com used when deploying fastly VCL updates,
  - Activate the cloned version.
 
 This is based on the [Fastly node client library](https://github.com/commuterjoy/fastly).
+
+## to-do
+
+Done
+
+- Deploy (or rollback) in under 6 seconds using the Fastly API.
+- A developer-oriented workflow - deploy to staging -> execute a test suite -> deploy to production.
+- Multi-region routing (eu, us) based on request origin. 
+- System state can be emulated with request headers.
+- Can serve one or more editions on the *same* URL.
+
+Not done 
+
+- Map editions to a preference cookie.
+- Fail-over to EU or US. Nb. should just be a case of deleting the region look-up switch.
 
