@@ -43,6 +43,28 @@ backend next_eu {
       }
 }
 
+backend next_us_router {
+    .connect_timeout = 1s;
+    .dynamic = true;
+    .port = "80";
+    .host = "pacific-anchorage-7654.herokuapp.com";
+    .host_header = "pacific-anchorage-7654.herokuapp.com";
+    .first_byte_timeout = 15s;
+    .max_connections = 200;
+    .between_bytes_timeout = 10s;
+    .share_key = "f8585BOxnGQDMbnkJoM1e";
+      
+    .probe = {
+        .request = "HEAD /__gtg HTTP/1.1" "Host: pacific-anchorage-7654.herokuapp.com" "Connection: close""User-Agent: Varnish/fastly (healthcheck)";
+        .threshold = 1;
+        .window = 2;
+        .timeout = 5s;
+        .initial = 1;
+        .expected_response = 200;
+        .interval = 60s;
+      }
+}
+
 sub vcl_recv {
     
     ##
@@ -100,9 +122,18 @@ sub vcl_recv {
         set req.http.X-FT-Cachable = "false";
         error 405 ": Requested Method is not supported by this server.";        
     }
+    
+    ##
+    # Router (experimental)
+    # 
+
+    # Ignore all of the above and use the experimental router backend!
+    if (req.http.X-Router == "true") {
+        set req.backend = next_us;
+        set req.http.Host = "pacific-anchorage-7654.herokuapp.com";
+    }
 
     return (lookup);
-
 }
 
 sub vcl_deliver {
